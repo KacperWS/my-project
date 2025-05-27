@@ -8,7 +8,7 @@ services:
     db:
         image: mariadb:10.11
         working_dir: /application
-        command: [ mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_520_ci, --innodb-file-per-table=1 ]
+        command: [ mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_general_ci, --innodb-file-per-table=1 ]
         volumes:
             - pimcore-demo-database:/var/lib/mysql
         environment:
@@ -28,7 +28,7 @@ services:
             - php
 
     php:
-        #user: '1000:1000' # set to your uid:gid
+        user: '0:0' # set to your uid:gid
         image: pimcore/pimcore:php8.3-debug-latest
         environment:
             COMPOSER_HOME: /var/www/html
@@ -40,7 +40,7 @@ services:
             - pimcore-demo-tmp-storage:/tmp
 
     supervisord:
-        #user: '1000:1000' # set to your uid:gid
+        user: '0:0' # set to your uid:gid
         image: pimcore/pimcore:php8.3-supervisord-latest
         depends_on:
             - db

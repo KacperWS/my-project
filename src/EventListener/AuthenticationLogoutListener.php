@@ -1,13 +1,16 @@
 <?php
 
 /**
- * This source file is available under the terms of the
- * Pimcore Open Core License (POCL)
+ * Pimcore
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Enterprise License (PEL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- *  @copyright  Copyright (c) Pimcore GmbH (https://www.pimcore.com)
- *  @license    Pimcore Open Core License (POCL)
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace App\EventListener;
@@ -31,8 +34,8 @@ class AuthenticationLogoutListener extends LogoutListener
     public function __construct(
         protected EnvironmentInterface $environment,
         protected SessionBagListener $sessionBagListener,
-        protected TokenStorageInterface $tokenStorage,
-        protected RouterInterface $router,
+        protected TokenStorageInterface    $tokenStorage,
+        protected RouterInterface          $router,
         protected EventDispatcherInterface $eventDispatcher
     ) {
     }

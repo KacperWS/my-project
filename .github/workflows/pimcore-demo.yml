@@ -20,15 +20,15 @@ jobs:
     strategy:
         matrix:
             include:
-                - { php-version: 8.4, database: "mariadb:10.11", pimcore_version: "", experimental: true }
-                - { php-version: 8.4, database: "mariadb:10.11", pimcore_version: "", pimcore_upgrade_version: "12.x-dev as 12.99.9", experimental: true }
-                - { php-version: 8.4, database: "mysql:latest", pimcore_version: "", experimental: true }
-                - { php-version: 8.4, database: "mysql:latest", pimcore_version: "", pimcore_upgrade_version: "12.x-dev as 12.99.9", experimental: true }
+                - { php-version: 8.3, database: "mariadb:10.11", pimcore_version: "", experimental: true }
+                - { php-version: 8.3, database: "mariadb:10.11", pimcore_version: "", pimcore_upgrade_version: "11.5.x-dev", experimental: true }
+                - { php-version: 8.3, database: "mysql:latest", pimcore_version: "", experimental: true }
+                - { php-version: 8.3, database: "mysql:latest", pimcore_version: "", pimcore_upgrade_version: "11.5.x-dev", experimental: true }
     steps:
     # Check out the repo in a sub-dir to see if it can serve as
     # template for `composer create-project`
     # See: https://github.com/actions/checkout#usage
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v2
       with:
         path: 'demo'
 
@@ -40,7 +40,7 @@ jobs:
         set -ex
         
         # Pull latest build of pimcore's image
-        docker pull docker.io/pimcore/pimcore:php"${PHP_VERSION}"-v4-dev
+        docker pull docker.io/pimcore/pimcore:php"${PHP_VERSION}"-latest
 
     - name: Create project from demo in latest pimcore environment
       env:
@@ -59,7 +59,7 @@ jobs:
           --volume=${{ github.workspace }}/:/test/ \
           --workdir=/test/ \
           --user=$(id -u):$(id -g) \
-          docker.io/pimcore/pimcore:php"${PHP_VERSION}"-v4-dev \
+          docker.io/pimcore/pimcore:php"${PHP_VERSION}"-latest \
             composer create-project \
               pimcore/demo:@dev \
               --repository='{"type": "path", "url": "./demo"}' \
@@ -82,9 +82,6 @@ jobs:
       env:
           PIMCORE_VERSION: "${{ matrix.pimcore_version }}"
           DOCKER_DATABASE: "${{ matrix.database }}"
-          PIMCORE_INSTANCE_IDENTIFIER: ${{ secrets.PIMCORE_CI_INSTANCE_IDENTIFIER }}
-          PIMCORE_ENCRYPTION_SECRET: ${{ secrets.PIMCORE_CI_ENCRYPTION_SECRET }}
-          PIMCORE_PRODUCT_KEY: ${{ secrets.PIMCORE_CI_PRODUCT_KEY }}
       run: |
         # Echo commands and terminate on first error
         set -ex
@@ -117,9 +114,6 @@ jobs:
         -e PIMCORE_INSTALL_ADMIN_PASSWORD=pimcore \
         -e PIMCORE_INSTALL_MYSQL_USERNAME=pimcore \
         -e PIMCORE_INSTALL_MYSQL_PASSWORD=pimcore \
-        -e PIMCORE_INSTALL_ENCRYPTION_SECRET=${PIMCORE_ENCRYPTION_SECRET} \
-        -e PIMCORE_INSTALL_INSTANCE_IDENTIFIER=${PIMCORE_INSTANCE_IDENTIFIER} \
-        -e PIMCORE_INSTALL_PRODUCT_KEY=${PIMCORE_PRODUCT_KEY} \
         -- \
         php vendor/bin/pimcore-install -n --mysql-host-socket=db --mysql-database=pimcore
           

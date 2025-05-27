@@ -1,18 +1,21 @@
 <?php
 
 /**
- * This source file is available under the terms of the
- * Pimcore Open Core License (POCL)
+ * Pimcore
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Enterprise License (PEL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- *  @copyright  Copyright (c) Pimcore GmbH (https://www.pimcore.com)
- *  @license    Pimcore Open Core License (POCL)
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace App\Form;
 
-use Pimcore\Localization\LocaleServiceInterface;
+use Pimcore\Localization\LocaleService;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -24,7 +27,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class DeliveryAddressFormType extends AbstractType
 {
-    public function __construct(protected LocaleServiceInterface $locale)
+    public function __construct(protected LocaleService $locale)
     {
     }
 

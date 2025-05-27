@@ -1,13 +1,16 @@
 <?php
 
 /**
- * This source file is available under the terms of the
- * Pimcore Open Core License (POCL)
+ * Pimcore
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Enterprise License (PEL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- *  @copyright  Copyright (c) Pimcore GmbH (https://www.pimcore.com)
- *  @license    Pimcore Open Core License (POCL)
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace App\Controller;
@@ -20,11 +23,13 @@ use Pimcore\Model\DataObject\OnlineShopOrder;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Annotation\Route;
 
 class CheckoutController extends FrontendController
 {
-    #[Route('/checkout-address', name: 'shop-checkout-address')]
+    /**
+     * @Route("/checkout-address", name="shop-checkout-address")
+     */
     public function checkoutAddressAction(
         Factory $factory,
         Request $request,
@@ -102,11 +107,12 @@ class CheckoutController extends FrontendController
     }
 
     /**
+     * @Route("/checkout-completed", name="shop-checkout-completed")
+     *
      * @param Factory $ecommerceFactory
      *
      * @return Response
      */
-    #[Route('/checkout-completed', name: 'shop-checkout-completed')]
     public function checkoutCompletedAction(Request $request, Factory $ecommerceFactory)
     {
         $orderId = $request->getSession()->get('last_order_id');
@@ -129,15 +135,15 @@ class CheckoutController extends FrontendController
      */
     public function confirmationMailAction(Request $request)
     {
-        $order = $request->attributes->get('order');
+        $order = $request->get('order');
 
-        if ($request->request->has('order-id')) {
-            $order = OnlineShopOrder::getById($request->request->getInt('order-id'));
+        if ($request->get('order-id')) {
+            $order = OnlineShopOrder::getById($request->get('order-id'));
         }
 
         return $this->render('checkout/confirmation_mail.html.twig', [
             'order' => $order,
-            'ordernumber' => $request->request->getString('ordernumber')
+            'ordernumber' => $request->get('ordernumber')
         ]);
     }
 }
