@@ -1,25 +1,28 @@
 <?php
 
 /**
- * This source file is available under the terms of the
- * Pimcore Open Core License (POCL)
+ * Pimcore
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Enterprise License (PEL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- *  @copyright  Copyright (c) Pimcore GmbH (https://www.pimcore.com)
- *  @license    Pimcore Open Core License (POCL)
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace App\Controller;
 
 use App\Model\Product\AbstractProduct;
 use App\Model\Product\Car;
-use Pimcore\Bundle\WebToPrintBundle\Processor;
 use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\Document\Hardlink;
+use Pimcore\Bundle\WebToPrintBundle\Processor;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Annotation\Route;
 
 class Web2printController extends BaseController
 {
@@ -80,7 +83,7 @@ class Web2printController extends BaseController
     {
         AbstractObject::setGetInheritedValues(true);
         $product = AbstractProduct::getById($request->query->getInt('id'));
-        if (!$product) {
+        if(!$product) {
             $product = AbstractProduct::getById($request->attributes->getInt('id'));
         }
         $paramsBag['product'] = $product;
@@ -89,9 +92,10 @@ class Web2printController extends BaseController
     }
 
     /**
+     * @Route("/product-print", name="product_print")
+     *
      * @throws \Exception
      */
-    #[Route('/product-print', name: 'product_print')]
     public function productPrintAction(Request $request): Response
     {
         $objId = $request->query->getInt('id');
@@ -102,7 +106,7 @@ class Web2printController extends BaseController
             $params['product'] = $obj;
             $html = $this->renderView('web2print/product_detail.html.twig', $params);
 
-            if ($request->query->getInt('html')) {
+            if ($request->get('html')) {
                 return new Response($html);
             }
 

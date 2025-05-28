@@ -1,13 +1,16 @@
 <?php
 
 /**
- * This source file is available under the terms of the
- * Pimcore Open Core License (POCL)
+ * Pimcore
+ *
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Enterprise License (PEL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
- *  @copyright  Copyright (c) Pimcore GmbH (https://www.pimcore.com)
- *  @license    Pimcore Open Core License (POCL)
+ *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
+ *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
 namespace App\Controller;
@@ -21,7 +24,7 @@ use Pimcore\Twig\Extension\Templating\Placeholder;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Annotation\Route;
 
 class NewsController extends BaseController
 {
@@ -39,7 +42,7 @@ class NewsController extends BaseController
 
         $paginator = $paginator->paginate(
             $newsList,
-            $request->query->getInt('page', 1),
+            $request->get('page', 1),
             6
         );
 
@@ -49,10 +52,12 @@ class NewsController extends BaseController
         ]);
     }
 
-    #[Route('{path}/{newstitle}~n{news}', name: 'news-detail', defaults: ['path' => ''], requirements: ['path' => '.*?', 'newstitle' => "[\w-]+", 'news' => "\d+"])]
+    /**
+     * @Route("{path}/{newstitle}~n{news}", name="news-detail", defaults={"path"=""}, requirements={"path"=".*?", "newstitle"="[\w-]+", "news"="\d+"})
+     */
     public function detailAction(Request $request, HeadTitle $headTitleHelper, Placeholder $placeholderHelper, NewsLinkGenerator $newsLinkGenerator, BreadcrumbHelperService $breadcrumbHelperService): Response
     {
-        $news = News::getById($request->attributes->getInt('news'));
+        $news = News::getById($request->get('news'));
 
         if (!($news instanceof News && ($news->isPublished() || $this->verifyPreviewRequest($request, $news)))) {
             throw new NotFoundHttpException('News not found.');
@@ -71,8 +76,8 @@ class NewsController extends BaseController
     public function newsTeaserAction(Request $request): Response
     {
         $paramsBag = [];
-        if ($request->attributes->getString('type') === 'object') {
-            $news = News::getById($request->attributes->getInt('id'));
+        if ($request->get('type') === 'object') {
+            $news = News::getById($request->get('id'));
             $paramsBag['news'] = $news;
 
             return $this->render('news/news_teaser.html.twig', $paramsBag);
@@ -84,8 +89,8 @@ class NewsController extends BaseController
     public function emailNewsTeaserAction(Request $request, NewsLinkGenerator $newsLinkGenerator): Response
     {
         $paramsBag = [];
-        if ($request->attributes->getString('type') === 'object') {
-            $news = News::getById($request->attributes->getInt('id'));
+        if ($request->get('type') === 'object') {
+            $news = News::getById($request->get('id'));
             $paramsBag['news'] = $news;
             $paramsBag['detailLink'] = $newsLinkGenerator->generate($news, ['document' => $this->document->getProperty('news_default_document')]);
 
