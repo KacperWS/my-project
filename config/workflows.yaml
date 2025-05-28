@@ -1,5 +1,41 @@
 pimcore:
     workflows:
+    
+        product_workflow:
+            label: 'Product Workflow'
+            type: 'state_machine'
+            supports:
+                - 'Pimcore\Model\DataObject\Product'
+            #initial_markings: nowy
+            places:
+                new:
+                    label: 'New'
+                verification:
+                    label: 'Need verification'
+                published:
+                    label: 'Published'
+                deprecated:
+                    label: 'Deprecated'
+            transitions:
+                accept:
+                    from: new
+                    to: verification
+                    options: {}
+                publish:
+                    from: verification
+                    to: published
+                    guard: "subject.getPrice() > 0"
+                    options: {}
+                deny:
+                    from: verification
+                    to: new
+                    options: {}
+                deprecate:
+                    from: published
+                    to: deprecated
+                    options: {}
+            marking_store:
+                type: 'single_state'
 
         simple_asset_workflow:
 
